@@ -45,6 +45,7 @@ zuul:
     routes:
         spring-boot-palindrome:
             path:       /spring-boot-palindrome/api/**
+            sensitiveHeaders: 
             serviceId:  spring-boot-palindrome
             stripPrefix: false
 
