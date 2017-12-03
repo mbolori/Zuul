@@ -1,0 +1,68 @@
+spring:
+  profiles.active: production
+
+---
+
+
+info:
+  app:
+    name: Zuul-server
+    description: Edge-router/load balancer powered by Netflix Eureka Server
+    version: 1.0.0
+    mode: default
+
+endpoints:
+  info:
+    enabled: true
+    sensitive: false
+
+  health:
+    sensitive: false
+    
+  metrics:
+    sensitive: false
+
+server:
+    port:     9100
+
+spring:
+    profiles:    production
+    application: 
+        name: zuul-edge-router
+
+ribbon:
+    ReadTimeout:    10000 
+    ConnectTimeout: 10000
+
+# Disable Hystrix timeout globally (for all services)
+hystrix.command.default.execution.timeout.enabled: false
+
+# Route this: http://localhost:port/spring-boot-palindrome/api/palindromes/
+# As Zuul is an Eureka-server client itself it has access to Eureka registry:
+# that path is meant to be directed towards "spring-boot-palindrome" serviceId
+zuul:
+    ignoredServices: '*'
+    routes:
+        spring-boot-palindrome:
+            path:       /spring-boot-palindrome/api/**
+            serviceId:  spring-boot-palindrome
+            stripPrefix: false
+
+# strategies allowed:
+#  AvailabilityFilteringRule: load balancer rule that filters out servers that are circuit breaker tripped state.
+#  RoundRobin: By default one
+#  WeightedResponseTimeRule: Extends round robin, t use the average/percentile response times to assign dynamic "weights" per Server which is then used in the "Weighted Round Robin" fashion
+#spring-boot-palindrome:
+#    ribbon:
+#      NFLoadBalancerRuleClassName:  com.netflix.loadbalancer.WeightedResponseTimeRule 
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone:    http://localhost:8761/eureka
+        healthcheck:
+            enabled: true
+        instance:
+            leaseRenewalIntervalInSeconds: 15
+            preferIpAddress:  true
+     
