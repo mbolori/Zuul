@@ -21,14 +21,26 @@ mvn clean install
 
 ### Running program
 
-It has to be run using java -jar 
+In order to run jar:
 ```
 java -jar Zuul-1.0.0-SNAPSHOT.jar start --spring.config.location=/<path-to-configuration/application.yml  
 ```
 
+It is not required to provide external configuration if Zuul is configured to route request towards service spring-boot-palindrome on path /spring-boot-palindrome/api/**
+```
+zuul:
+    ignoredServices: '*'
+    routes:
+        spring-boot-palindrome:
+            path:       /spring-boot-palindrome/api/**
+            sensitiveHeaders: 
+            serviceId:  spring-boot-palindrome
+            stripPrefix: false
+```
+
 ## Configuration
 
-It HAS to be provided an external application.yml. Most of the configuration is well known boilerplate configuration such spring.info, spring.profile, spring.application, actuator's endpoints configuration, server.port, etc.
+Most of the configuration is well known boilerplate configuration such spring.info, spring.profile, spring.application, actuator's endpoints configuration, server.port, etc.
 What is specific? 
 
 ### Ribbon Configuration
