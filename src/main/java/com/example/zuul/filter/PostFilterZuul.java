@@ -11,6 +11,14 @@ import org.springframework.stereotype.Component;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 
+/**
+ * Post Filter Zuul filter: It is ran after PRE and ROUTING filters. It runs only when request had been matched with a Eureka serviceId.
+ * It uses thread-local container RequestContext to access data about request/response:
+ *    As it is used Ribbon client side load balancing It is logged some RibbonResponse details such:
+ *    Eureka serviceId, inner service Url, added headers by Zuul, response received, response's headers...
+ *    
+ * Finally it is added a custom header "X-Zuul-Handled" header.
+ */
 @Component
 public class PostFilterZuul extends ZuulFilter{
 
@@ -31,8 +39,8 @@ public class PostFilterZuul extends ZuulFilter{
 		log.info("============== [PostFilterZuul BEGIN] =================");
 		
 		RequestContext ctx = RequestContext.getCurrentContext();
-		//HttpServletResponse response = ctx.getResponse();
 		RibbonApacheHttpResponse ribbonResponse =  (RibbonApacheHttpResponse) ctx.get("ribbonResponse");
+		
 		String serviceId = (String) ctx.get(FilterConstants.SERVICE_ID_KEY);
 		String towardsUri = ribbonResponse.getRequestedURI().toString();
 		log.info("FORWARDED_TOWARDS=" + serviceId + ", URL=" + towardsUri);

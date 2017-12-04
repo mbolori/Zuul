@@ -30,6 +30,8 @@ spring:
     application: 
         name: zuul-edge-router
 
+# Zuul uses ribbon as client side load balancer/router. Some parameters can be tweaked. Follow this pattern: <clientName>.<nameSpace>.<propertyName>=<value>. If no nameSpace will affect all clients.
+# Some examples are <client>.ribbon.ConnectTimeout,  <client>.ribbon.ReadTimeout, <client>.ribbon.MaxAutoRetries, <client>.ribbon.MaxAutoRetriesNextServer
 ribbon:
     ReadTimeout:    10000 
     ConnectTimeout: 10000
@@ -49,14 +51,20 @@ zuul:
             serviceId:  spring-boot-palindrome
             stripPrefix: false
 
-# strategies allowed:
+# Zuul uses ribbon as client side load balancer/router.  
+# A load balancer has 3 main components: Rule(which server to use), Ping(Ensure liveness of servers), ServerList(List of servers to use)
+# Rule allowed:
 #  AvailabilityFilteringRule: load balancer rule that filters out servers that are circuit breaker tripped state.
 #  RoundRobin: By default one
-#  WeightedResponseTimeRule: Extends round robin, t use the average/percentile response times to assign dynamic "weights" per Server which is then used in the "Weighted Round Robin" fashion
+#  WeightedResponseTimeRule: Extends round robin, uses the average/percentile response times to assign dynamic "weights" per Server which is then used in the "Weighted Round Robin" fashion
+# It follows pattern <client>.ribbon.NFLoadBalancerRuleClassName: <one of the previous one> . If no nameSpace will affect all clients.
 #spring-boot-palindrome:
 #    ribbon:
 #      NFLoadBalancerRuleClassName:  com.netflix.loadbalancer.WeightedResponseTimeRule 
 
+
+# This Zuul implementation uses Eureka service registry to have a dynamic set of ServerList availables.
+# It is configured Eureka Server Url to register with, Zuul will "ping" periodically to avoid being removed from Eureka Server registry. 
 eureka:
     client:
         serviceUrl:

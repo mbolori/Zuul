@@ -4,7 +4,6 @@ import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.MDC;
 import org.slf4j.Logger;
@@ -15,6 +14,13 @@ import org.springframework.stereotype.Component;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 
+/**
+ Pre Filter Zuul filter: It is ran before PRE and ROUTING filters. 
+ 
+ * It uses thread-local container RequestContext to access data about  original request:
+ *    request headers, remote host, requested url.
+ *
+ */
 @Component
 public class PreFilterZuul extends ZuulFilter {
 

@@ -21,6 +21,23 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 
+/**
+ * Starter class: Spring boot entry point.
+ * 
+ * It acts as an Eureka client (@EnableEurekaClient): It is able to register itself with an Eureka Server. Once it is register it receives from Eureka periodically 
+ *  updates about the microservice instances running. It requires specific configuration on application.yml: eureka.client properties. 
+ * 
+ * It acts as a Zuul proxy(@EnableZuulProxy): It acts as a router/load balancer:  
+ *  proxy uses Ribbon to locate an instance to forward to via discovery, and all requests are executed in a hystrix command, 
+ * 
+ * It also defines the init of the hierarchy of all classed being scanned by Spring (labeled as @SprinBootApplication)
+ * Features:
+ * Create pidfile on working dir when starting.
+ * if pidfile is present, application cannot start
+ * if pidfile is removed, application will be stopped
+ * 
+ * TODO: Below features should be moved to a parent project (with common dependencies included)
+ */
 @SpringBootApplication
 @EnableEurekaClient
 @EnableZuulProxy
@@ -48,7 +65,7 @@ public class MainClass {
     /**
      * Watch over pidfile. If there is a delete event: Spring application stops gracefully.
      * Listen to "ApplicationReadyEvent" to setup the watcher on the file.
-     * Implemented as Runnable: Watch is working on its own thread, this prevent spring app from stalling on the infinite loop waiting for file events.
+     * Implemented as Runnable: Watcher is working on its own thread, this prevent spring app from stalling on the infinite loop waiting for file events.
      *
      */
     public static class PidWatcher implements ApplicationListener<SpringApplicationEvent>, Runnable{
